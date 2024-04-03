@@ -16,3 +16,9 @@ $ sudo apt-get install maven -y
 ```
 $ sudo apt-get install awscli -y
 ```
+## Create accounts
+* Git account
+* GoDaddy: to hiberge website
+* Dockerhub
+* Sonarcloud
+* aws account
