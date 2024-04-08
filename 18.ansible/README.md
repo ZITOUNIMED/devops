@@ -23,7 +23,8 @@ Ansible uses SSH or winrm or API or physical cables to connect to systems:
 * cables: routers, switches, any server
 ## Ansible architecture
 See screenshot 'ansible-architecture.png'.
-## Example: ansible on AWS
+## Examples: ansible on AWS
+### Exercice 1
 Follow steps:
 1. create EC2 instance free tier with this config:
 * AMI ubuntu
@@ -65,7 +66,7 @@ $ vim inventory
 all:
   hosts:
     web01:
-      ansible_host: 172.31.25.59
+      ansible_host: ........
       ansible_user: ec2-user
       ansible_ssh_private_key_file: clientkey.pem
 
@@ -134,3 +135,215 @@ web01 | SUCCESS => {
 
 ```
 
+### Exercice 2
+```
+$ pwd 
+vprofile
+$ cp -r exercice1/ exerice2
+$ cd exercice2
+$ ls
+clientkey.pem inventory
+$ vim inventory
+all:
+  hosts:
+    web01:
+      ansible_host: .....
+      ansible_user: ec2-user
+      ansible_ssh_private_key_file: clientkey.pem
+    web02:
+      ansible_host: ......
+      ansible_user: ec2-user
+      ansible_ssh_private_key_file: clientkey.pem
+    db01:
+      ansible_host: .......
+      ansible_user: ec2-user
+      ansible_ssh_private_key_file: clientkey.pem
+$ ansible web02 -m ping -i inventory
+web02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+$ ansible db01 -m ping -i inventory
+db01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+
+```
+
+* ping many hosts together
+
+```
+$ vim inventory
+all:
+  hosts:
+    web01:
+      ansible_host: 172.31.25.59
+      ansible_user: ec2-user
+      ansible_ssh_private_key_file: clientkey.pem
+    web02:
+      ansible_host: 172.31.16.174
+      ansible_user: ec2-user
+      ansible_ssh_private_key_file: clientkey.pem
+    db01:
+      ansible_host: 172.31.27.54
+      ansible_user: ec2-user
+      ansible_ssh_private_key_file: clientkey.pem
+
+  children:
+    webservers:
+      hosts:
+        web01:
+        web02:
+    dbservers:
+      hosts:
+        db01:
+    dc_oregon:
+      children:
+        webservers:
+        dbservers:
+$ ansible webservers -m ping -i inventoryweb02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+web01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+$ ansible dbservers -m ping -i inventory db01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+$ ansible dc_oregon -m ping -i inventory
+web02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+db01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+web01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+$ ansible all -m ping -i inventory
+web02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+db01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+web01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+$ ansible '*' -m ping -i inventory
+web02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+web01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+db01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+$ ansible 'web*' -m ping -i inventory
+web02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+web01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+### Exercice 3
+```
+$ cd ..
+$ cp -r exercice2 exercice3
+$ cd exercice3
+$ ls
+clientkey.pem  inventory
+# we can define variables
+# host variables have more priority than group variables
+$ vim inventory
+all:
+  hosts:
+    web01:
+      ansible_host: 172.31.25.59
+    web02:
+      ansible_host: 172.31.16.174
+    db01:
+      ansible_host: 172.31.27.54
+
+  children:
+    webservers:
+      hosts:
+        web01:
+        web02:
+    dbservers:
+      hosts:
+        db01:
+    dc_oregon:
+      children:
+        webservers:
+        dbservers:
+      vars:
+        ansible_user: ec2-user
+        ansible_ssh_private_key_file: clientkey.pem
+```
