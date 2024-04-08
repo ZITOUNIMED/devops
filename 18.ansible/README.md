@@ -347,3 +347,121 @@ all:
         ansible_user: ec2-user
         ansible_ssh_private_key_file: clientkey.pem
 ```
+### Exercice 4: ad hoc commands
+Configuration managements:
+```
+$ cd ..
+$ cp -r exercice3 exercice4
+$ ansible web01 -m ansible.builtin.yum -a "name=httpd state=present" -i inventory
+web01 | FAILED! => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "msg": "This command has to be run under the root user.",
+    "results": []
+}
+$ ansible web01 -m ansible.builtin.yum -a "name=httpd state=present" -i inventory --become
+web01 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "Installed: apr-util-1.6.1-23.el9.x86_64",
+        "Installed: apr-util-bdb-1.6.1-23.el9.x86_64",
+        "Installed: httpd-tools-2.4.57-8.el9.x86_64",
+        "Installed: centos-logos-httpd-90.4-1.el9.noarch",
+        "Installed: mailcap-2.1.49-5.el9.noarch",
+        "Installed: mod_lua-2.4.57-8.el9.x86_64",
+        "Installed: httpd-2.4.57-8.el9.x86_64",
+        "Installed: apr-util-openssl-1.6.1-23.el9.x86_64",
+        "Installed: httpd-core-2.4.57-8.el9.x86_64",
+        "Installed: apr-1.7.0-12.el9.x86_64",
+        "Installed: mod_http2-2.0.26-1.el9.x86_64",
+        "Installed: httpd-filesystem-2.4.57-8.el9.noarch"
+    ]
+}
+$ ansible webservers -m ansible.builtin.yum -a "name=httpd state=present" -i inventory --become
+web01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "msg": "Nothing to do",
+    "rc": 0,
+    "results": []
+}
+web02 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "Installed: apr-util-1.6.1-23.el9.x86_64",
+        "Installed: apr-util-bdb-1.6.1-23.el9.x86_64",
+        "Installed: httpd-tools-2.4.57-8.el9.x86_64",
+        "Installed: centos-logos-httpd-90.4-1.el9.noarch",
+        "Installed: mailcap-2.1.49-5.el9.noarch",
+        "Installed: mod_lua-2.4.57-8.el9.x86_64",
+        "Installed: httpd-2.4.57-8.el9.x86_64",
+        "Installed: apr-util-openssl-1.6.1-23.el9.x86_64",
+        "Installed: httpd-core-2.4.57-8.el9.x86_64",
+        "Installed: apr-1.7.0-12.el9.x86_64",
+        "Installed: mod_http2-2.0.26-1.el9.x86_64",
+        "Installed: httpd-filesystem-2.4.57-8.el9.noarch"
+    ]
+}
+$ ansible webservers -m ansible.builtin.yum -a "name=httpd state=present" -i inventory --become
+web02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "msg": "Nothing to do",
+    "rc": 0,
+    "results": []
+}
+web01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "msg": "Nothing to do",
+    "rc": 0,
+    "results": []
+}
+$ ansible webservers -m ansible.builtin.yum -a "name=httpd state=absent" -i inventory --become
+web01 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "Removed: httpd-2.4.57-8.el9.x86_64",
+        "Removed: mod_http2-2.0.26-1.el9.x86_64"
+    ]
+}
+web02 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": true,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "Removed: httpd-2.4.57-8.el9.x86_64",
+        "Removed: mod_http2-2.0.26-1.el9.x86_64"
+    ]
+}
+$ ansible webservers -m ansible.builtin.service -a "name=httpd state=started enabled=yes" -i inventory --become
+# this will do systemctl start httpd and systemctl enable httpd
+$ ansible webservers -m ansible.builtin.copy -a "src=index.html dest=/var/www/html/index.html" -i inventory --become
+
+```
