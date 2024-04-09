@@ -600,6 +600,8 @@ $ ansible-playbook -i inventory web-db.yaml -C
 ```
 
 ### Exercice 6
+In this exercice we will see how to use ansible Files module with a sample example of copying a file from ansible host to target host.
+Search for the documentation using keywork ansible module index and open the link of the module Files index. You can see there examples.
 ```
 $ cp exercice5 exercice6
 $ cd exercice6
@@ -654,5 +656,310 @@ PLAY RECAP *********************************************************************
 web01                      : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 web02                      : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
+$ ls
+clientkey.pem  files  inventory  web.yaml
+$ cat inventory
+all:
+  hosts:
+    web01:
+      ansible_host: 172.31.25.59
+    web02:
+      ansible_host: 172.31.16.174
+    db01:
+      ansible_host: 172.31.27.54
+
+  children:
+    webservers:
+      hosts:
+        web01:
+        web02:
+    dbservers:
+      hosts:
+        db01:
+    dc_oregon:
+      children:
+        webservers:
+        dbservers:
+      vars:
+        ansible_user: ec2-user
+        ansible_ssh_private_key_file: clientkey.pem
+
+$ ssh -i clientkey.pem ec2-user@172.31.16.174
+Last login: Tue Apr  9 05:27:19 2024 from 172.31.25.35
+$ cd /var/www/html/
+$ ls
+index.html  index.html.19371.2024-04-09@05:27:20~
+$ cat index.html
+Learn modules of ansible
+$ cat index.html.19371.2024-04-09\@05\:27\:20~
+this is managed by ansible v2
+$ exit
+$ sudo hostname control
+$ exit
+$ ssh -i mz-controlmachine-kp.pem ubuntu@54.197.2.148
+ubuntu@control:~$
+```
+
+### Exercice 7
+In this exercice we will see how to manage a database on a target host using ansible.
+Search for documentation using keyword ansible index module and open the submodule link databases modules and look for mysql and open it.
+```
+ubuntu@control:~$ cd vprofile
+ubuntu@control:~/vprofile$ cp -r exercice5 exercice7
+ubuntu@control:~/vprofile$ cd exercice7
+ubuntu@control:~/vprofile/exercice7$ ls
+clientkey.pem  inventory  web-db.yaml
+ubuntu@control:~/vprofile/exercice7$ mv web-db.yaml db.yaml
+ubuntu@control:~/vprofile/exercice7$ vim db.yaml
+---
+- name: DBserver setup
+  hosts: dbservers
+  become: yes
+  tasks:
+    - name: Install mariadb-server
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+    - name: start mariadb service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+    - name: Create a new database with name 'accounts'
+      mysql_db:
+        name: accounts
+        state: present
+ubuntu@control:~/vprofile/exercice7$ ansible-playbook -i inventory db.yaml -C
+
+PLAY [DBserver setup] **************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+
+TASK [Install mariadb-server] ******************************************************
+ok: [db01]
+
+TASK [start mariadb service] *******************************************************
+ok: [db01]
+
+TASK [Create a new database with name 'accounts'] **********************************
+fatal: [db01]: FAILED! => {"changed": false, "msg": "A MySQL module is required: for Python 2.7 either PyMySQL, or MySQL-python, or for Python 3.X mysqlclient or PyMySQL. Consider setting ansible_python_interpreter to use the intended Python version."}
+
+PLAY RECAP *************************************************************************
+db01                       : ok=3    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
+
+$ cat inventory
+all:
+  hosts:
+    web01:
+      ansible_host: 172.31.25.59
+    web02:
+      ansible_host: 172.31.16.174
+    db01:
+      ansible_host: 172.31.27.54
+
+  children:
+    webservers:
+      hosts:
+        web01:
+        web02:
+    dbservers:
+      hosts:
+        db01:
+    dc_oregon:
+      children:
+        webservers:
+        dbservers:
+      vars:
+        ansible_user: ec2-user
+        ansible_ssh_private_key_file: clientkey.pem
+
+ubuntu@control:~/vprofile/exercice7$ ls
+clientkey.pem  db.yaml  inventory
+ubuntu@control:~/vprofile/exercice7$ ssh -i clientkey.pem ec2-user@172.31.27.54
+Last login: Tue Apr  9 05:51:54 2024 from 172.31.25.35
+[ec2-user@ip-172-31-27-54 ~]$ sudo -i
+[root@ip-172-31-27-54 ~]# yum search python | grep -i mysql
+Last metadata expiration check: 1:00:05 ago on Tue 09 Apr 2024 04:57:25 AM UTC.
+python3-PyMySQL.noarch : Pure-Python MySQL client library
+python3.11-PyMySQL.noarch : Pure-Python MySQL client library
+python3.11-PyMySQL+rsa.noarch : Metapackage for python3.11-PyMySQL: rsa extras
+python3.12-PyMySQL.noarch : Pure-Python MySQL client library
+python3.12-PyMySQL+rsa.noarch : Metapackage for python3.12-PyMySQL: rsa extras
+[root@ip-172-31-27-54 ~]# exit
+logout
+[ec2-user@ip-172-31-27-54 ~]$ exit
+logout
+Connection to 172.31.27.54 closed.
+ubuntu@control:~/vprofile/exercice7$
+ubuntu@control:~/vprofile/exercice7$ vim db.yaml
+---
+- name: DBserver setup
+  hosts: dbservers
+  become: yes
+  tasks:
+    - name: Install mariadb-server
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+
+    - name: Install pymysql
+      ansible.builtin.yum:
+        name: python3-PyMySQL
+        state: present
+
+    - name: start mariadb service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create a new database with name 'accounts'
+      mysql_db:
+        name: accounts
+        state: present
+ubuntu@control:~/vprofile/exercice7$ ansible-playbook -i inventory db.yaml
+
+PLAY [DBserver setup] **************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+
+TASK [Install mariadb-server] ******************************************************
+ok: [db01]
+
+TASK [Install pymysql] *************************************************************
+changed: [db01]
+
+TASK [start mariadb service] *******************************************************
+ok: [db01]
+
+TASK [Create a new database with name 'accounts'] **********************************
+fatal: [db01]: FAILED! => {"changed": false, "msg": "unable to find /root/.my.cnf. Exception message: (1698, \"Access denied for user 'root'@'localhost'\")"}
+
+PLAY RECAP *************************************************************************
+db01                       : ok=4    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
+ubuntu@control:~/vprofile/exercice7$ vim db.yaml
+---
+- name: DBserver setup
+  hosts: dbservers
+  become: yes
+  tasks:
+    - name: Install mariadb-server
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+
+    - name: Install pymysql
+      ansible.builtin.yum:
+        name: python3-PyMySQL
+        state: present
+
+    - name: start mariadb service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create a new database with name 'accounts'
+      mysql_db:
+        name: accounts
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+
+ubuntu@control:~/vprofile/exercice7$ ansible-playbook -i inventory db.yaml
+
+PLAY [DBserver setup] **************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+
+TASK [Install mariadb-server] ******************************************************
+ok: [db01]
+
+TASK [Install pymysql] *************************************************************
+ok: [db01]
+
+TASK [start mariadb service] *******************************************************
+ok: [db01]
+
+TASK [Create a new database with name 'accounts'] **********************************
+changed: [db01]
+
+PLAY RECAP *************************************************************************
+db01                       : ok=5    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+```
+#### Exercice 7 part 2
+Use mysql community module:
+* Search on Google for ansible mysql community and open the found link. 
+* Open mysql_db.module
+
+```
+ubuntu@control:~/vprofile/exercice7$ ansible-galaxy collection install community.mysql
+Starting galaxy collection install process
+Nothing to do. All requested collections are already installed. If you want to reinstall them, consider using `--force`.
+ubuntu@control:~/vprofile/exercice7$ vim db.yaml
+ubuntu@control:~/vprofile/exercice7$ cat db.yaml
+---
+- name: DBserver setup
+  hosts: dbservers
+  become: yes
+  tasks:
+    - name: Install mariadb-server
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+
+    - name: Install pymysql
+      ansible.builtin.yum:
+        name: python3-PyMySQL
+        state: present
+
+    - name: start mariadb service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create a new database with name 'accounts'
+      community.mysql.mysql_db:
+        name: accounts
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+
+    - name: Create database user with name 'vprofile'
+      community.mysql.mysql_user:
+        name: vprofile
+        password: 'admin943'
+        priv: '*.*:ALL'
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+ubuntu@control:~/vprofile/exercice7$ ansible-playbook -i inventory db.yaml          
+PLAY [DBserver setup] **************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+
+TASK [Install mariadb-server] ******************************************************
+ok: [db01]
+
+TASK [Install pymysql] *************************************************************
+ok: [db01]
+
+TASK [start mariadb service] *******************************************************
+ok: [db01]
+
+TASK [Create a new database with name 'accounts'] **********************************
+ok: [db01]
+
+TASK [Create database user with name 'vprofile'] ***********************************
+[WARNING]: Option column_case_sensitive is not provided. The default is now false,
+so the column's name will be uppercased. The default will be changed to true in
+community.mysql 4.0.0.
+changed: [db01]
+
+PLAY RECAP *************************************************************************
+db01                       : ok=6    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
 ```
