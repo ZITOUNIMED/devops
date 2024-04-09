@@ -963,3 +963,117 @@ PLAY RECAP *********************************************************************
 db01                       : ok=6    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
 ```
+
+## Ansible configuration
+### Order of Ansible config
+1. ANSIBLE_CONFIG (environment variable if set)
+2. ansible.cfg (in the current directory)
+3. ~/.ansible.cfg (in the home directory)
+4. /etc/ansible/ansible.cfg
+
+* Lets inspect /etc/ansible.ansible.cfg file:
+```
+ubuntu@control:~/vprofile/exercice7$ sudo -i
+root@control:~# vim /etc/ansible/ansible.cfg
+root@control:~# exit
+```
+
+* Search on google for ansible configuration file.
+
+* Lets use local ansible.cfg file for the current project
+
+```
+ubuntu@control:~/vprofile/exercice7$ vim ansible.cfg
+ubuntu@control:~/vprofile/exercice7$ cat ansible.cfg
+[defaults]
+host_key_checking=False
+inventory= ./inventory
+forks=3
+log_path=/var/log/ansible.log
+
+[privilege_escalation]
+become=True
+become_method=sudo
+become_ask_pass=False
+ubuntu@control:~/vprofile/exercice7$ ansible-playbook db.yaml
+[WARNING]: log file at /var/log/ansible.log is not writeable and we cannot create it, aborting
+
+
+PLAY [DBserver setup] **************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+
+TASK [Install mariadb-server] ******************************************************
+ok: [db01]
+
+TASK [Install pymysql] *************************************************************
+ok: [db01]
+
+TASK [start mariadb service] *******************************************************
+ok: [db01]
+
+TASK [Create a new database with name 'accounts'] **********************************
+ok: [db01]
+
+TASK [Create database user with name 'vprofile'] ***********************************
+[WARNING]: Option column_case_sensitive is not provided. The default is now false,
+so the column's name will be uppercased. The default will be changed to true in
+community.mysql 4.0.0.
+ok: [db01]
+
+PLAY RECAP *************************************************************************
+db01                       : ok=6    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+ubuntu@control:~/vprofile/exercice7$ sudo touch /var/log/ansible.log
+ubuntu@control:~/vprofile/exercice7$ sudo chown ubuntu.ubuntu /var/log/ansible.log
+ubuntu@control:~/vprofile/exercice7$ cat /var/log/ansible.log
+ubuntu@control:~/vprofile/exercice7$ ansible-playbook db.yaml
+
+PLAY [DBserver setup] **************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+
+TASK [Install mariadb-server] ******************************************************
+ok: [db01]
+
+TASK [Install pymysql] *************************************************************
+ok: [db01]
+
+TASK [start mariadb service] *******************************************************
+ok: [db01]
+
+TASK [Create a new database with name 'accounts'] **********************************
+ok: [db01]
+
+TASK [Create database user with name 'vprofile'] ***********************************
+[WARNING]: Option column_case_sensitive is not provided. The default is now false,
+so the column's name will be uppercased. The default will be changed to true in
+community.mysql 4.0.0.
+ok: [db01]
+
+PLAY RECAP *************************************************************************
+db01                       : ok=6    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+ubuntu@control:~/vprofile/exercice7$ cat /var/log/ansible.log
+2024-04-09 07:01:30,843 p=14178 u=ubuntu n=ansible | PLAY [DBserver setup] **************************************************************
+2024-04-09 07:01:30,852 p=14178 u=ubuntu n=ansible | TASK [Gathering Facts] *************************************************************
+2024-04-09 07:01:32,487 p=14178 u=ubuntu n=ansible | ok: [db01]
+2024-04-09 07:01:32,501 p=14178 u=ubuntu n=ansible | TASK [Install mariadb-server] ******************************************************
+2024-04-09 07:01:33,780 p=14178 u=ubuntu n=ansible | ok: [db01]
+2024-04-09 07:01:33,787 p=14178 u=ubuntu n=ansible | TASK [Install pymysql] *************************************************************
+2024-04-09 07:01:34,875 p=14178 u=ubuntu n=ansible | ok: [db01]
+2024-04-09 07:01:34,882 p=14178 u=ubuntu n=ansible | TASK [start mariadb service] *******************************************************
+2024-04-09 07:01:35,826 p=14178 u=ubuntu n=ansible | ok: [db01]
+2024-04-09 07:01:35,834 p=14178 u=ubuntu n=ansible | TASK [Create a new database with name 'accounts'] **********************************
+2024-04-09 07:01:36,483 p=14178 u=ubuntu n=ansible | ok: [db01]
+2024-04-09 07:01:36,488 p=14178 u=ubuntu n=ansible | TASK [Create database user with name 'vprofile'] ***********************************
+2024-04-09 07:01:37,180 p=14178 u=ubuntu n=ansible | [WARNING]: Option column_case_sensitive is not provided. The default is now false,
+so the column's name will be uppercased. The default will be changed to true in
+community.mysql 4.0.0.
+
+2024-04-09 07:01:37,180 p=14178 u=ubuntu n=ansible | ok: [db01]
+2024-04-09 07:01:37,194 p=14178 u=ubuntu n=ansible | PLAY RECAP *************************************************************************
+2024-04-09 07:01:37,194 p=14178 u=ubuntu n=ansible | db01                       : ok=6    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0 
+
+```
