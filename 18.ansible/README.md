@@ -1464,5 +1464,552 @@ ok: [db01] => {
 PLAY RECAP *************************************************************************
 db01                       : ok=9    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
+ubuntu@control:~/vprofile/exercice8$ mkdir group_vars
+ubuntu@control:~/vprofile/exercice8$ vim group_vars/all
+ubuntu@control:~/vprofile/exercice8$ cat group_vars/all
+dbname: sky
+dbuser: pilot
+dbpass: aircraft
+ubuntu@control:~/vprofile/exercice8$ vim db.yaml
+ubuntu@control:~/vprofile/exercice8$ cat db.yaml
+---
+- name: DBserver setup
+  hosts: dbservers
+  become: yes
+    #vars:
+    #dbname: electric
+    #dbuser: current
+    #dbpass: tesla
+  tasks:
+    - debug:
+        msg: "Dbname: {{dbname}}, dbuser: {{dbuser}}"
+    - debug:
+        var: dbpass
+
+    - name: Install mariadb-server
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+
+    - name: Install pymysql
+      ansible.builtin.yum:
+        name: python3-PyMySQL
+        state: present
+
+    - name: start mariadb service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create a new database
+      community.mysql.mysql_db:
+        name: "{{dbname}}"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+
+    - name: Create database user
+      community.mysql.mysql_user:
+        name: "{{dbuser}}"
+        password: "{{dbpass}}"
+        priv: '*.*:ALL'
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+      register: dbout
+    - name: print dbout variable
+      debug:
+        var: dbout
+
+ubuntu@control:~/vprofile/exercice8$ ansible-playbook db.yaml
+
+PLAY [DBserver setup] **************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+
+TASK [debug] ***********************************************************************
+ok: [db01] => {
+    "msg": "Dbname: sky, dbuser: pilot"
+}
+
+TASK [debug] ***********************************************************************
+ok: [db01] => {
+    "dbpass": "aircraft"
+}
+
+TASK [Install mariadb-server] ******************************************************
+ok: [db01]
+
+TASK [Install pymysql] *************************************************************
+ok: [db01]
+
+TASK [start mariadb service] *******************************************************
+ok: [db01]
+
+TASK [Create a new database] *******************************************************
+changed: [db01]
+
+TASK [Create database user] ********************************************************
+[WARNING]: Option column_case_sensitive is not provided. The default is now false,
+so the column's name will be uppercased. The default will be changed to true in
+community.mysql 4.0.0.
+changed: [db01]
+
+TASK [print dbout variable] ********************************************************
+ok: [db01] => {
+    "dbout": {
+        "attributes": null,
+        "changed": true,
+        "failed": false,
+        "msg": "User added",
+        "password_changed": true,
+        "user": "pilot",
+        "warnings": [
+            "Option column_case_sensitive is not provided. The default is now false, so the column's name will be uppercased. The default will be changed to true in community.mysql 4.0.0."
+        ]
+    }
+}
+
+PLAY RECAP *************************************************************************
+db01                       : ok=9    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
 ```
+
+### Exercice 9
+```
+ubuntu@control:~/vprofile/exercice8$ cd ..
+ubuntu@control:~/vprofile$ cp -r exercice8 exercice9
+ubuntu@control:~/vprofile$ cd exercice9
+ubuntu@control:~/vprofile/exercice9$ ls
+ansible.cfg  clientkey.pem  db.yaml  group_vars  inventory
+ubuntu@control:~/vprofile/exercice9$ rm -rf db.yaml
+ubuntu@control:~/vprofile/exercice9$ rm -rf group_vars
+ubuntu@control:~/vprofile/exercice9$ ls
+ansible.cfg  clientkey.pem  inventory
+ubuntu@control:~/vprofile/exercice9$ vim vars_precedence.yaml
+ubuntu@control:~/vprofile/exercice9$ cat vars_precedence.yaml
+- name: Understanding vars
+  hosts: all
+  vars:
+    USRNM: playuser
+    COMM: variable from playbook
+  tasks:
+    - name: create user
+      ansible.builtin.user:
+        name: "{{USRNM}}"
+        comment: "{{COMM}}"
+ubuntu@control:~/vprofile/exercice9$ ansible-playbook vars_precedence.yaml
+
+PLAY [Understanding vars] **********************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+ok: [web01]
+ok: [web02]
+
+TASK [create user] *****************************************************************
+changed: [web02]
+changed: [db01]
+changed: [web01]
+
+PLAY RECAP *************************************************************************
+db01                       : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+ubuntu@control:~/vprofile/exercice9$ vim vars_precedence.yaml
+ubuntu@control:~/vprofile/exercice9$ cat vars_precedence.yaml
+- name: Understanding vars
+  hosts: all
+  vars:
+    USRNM: playuser
+    COMM: variable from playbook
+  tasks:
+    - name: create user
+      ansible.builtin.user:
+        name: "{{USRNM}}"
+        comment: "{{COMM}}"
+ubuntu@control:~/vprofile/exercice9$ ansible-playbook vars_precedence.yaml
+
+PLAY [Understanding vars] **********************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+ok: [web01]
+ok: [web02]
+
+TASK [create user] *****************************************************************
+changed: [web02]
+changed: [db01]
+changed: [web01]
+
+PLAY RECAP *************************************************************************
+db01                       : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+ubuntu@control:~/vprofile/exercice9$ vim vars_precedence.yaml
+ubuntu@control:~/vprofile/exercice9$ cat vars_precedence.yaml
+- name: Understanding vars
+  hosts: all
+  vars:
+    USRNM: playuser
+    COMM: variable from playbook
+  tasks:
+    - name: create user
+      ansible.builtin.user:
+        name: "{{USRNM}}"
+        comment: "{{COMM}}"
+      register: usrout
+    - debug:
+        var: usrout
+ubuntu@control:~/vprofile/exercice9$ ansible-playbook vars_precedence.yaml
+
+PLAY [Understanding vars] **********************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [web01]
+ok: [web02]
+ok: [db01]
+
+TASK [create user] *****************************************************************
+ok: [web02]
+ok: [web01]
+ok: [db01]
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout": {
+        "append": false,
+        "changed": false,
+        "comment": "variable from playbook",
+        "failed": false,
+        "group": 1001,
+        "home": "/home/playuser",
+        "move_home": false,
+        "name": "playuser",
+        "shell": "/bin/bash",
+        "state": "present",
+        "uid": 1001
+    }
+}
+ok: [web02] => {
+    "usrout": {
+        "append": false,
+        "changed": false,
+        "comment": "variable from playbook",
+        "failed": false,
+        "group": 1001,
+        "home": "/home/playuser",
+        "move_home": false,
+        "name": "playuser",
+        "shell": "/bin/bash",
+        "state": "present",
+        "uid": 1001
+    }
+}
+ok: [db01] => {
+    "usrout": {
+        "append": false,
+        "changed": false,
+        "comment": "variable from playbook",
+        "failed": false,
+        "group": 1001,
+        "home": "/home/playuser",
+        "move_home": false,
+        "name": "playuser",
+        "shell": "/bin/bash",
+        "state": "present",
+        "uid": 1001
+    }
+}
+
+PLAY RECAP *************************************************************************
+db01                       : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+ubuntu@control:~/vprofile/exercice9$ vim vars_precedence.yaml
+ubuntu@control:~/vprofile/exercice9$ cat vars_precedence.yaml
+- name: Understanding vars
+  hosts: all
+  vars:
+    USRNM: playuser
+    COMM: variable from playbook
+  tasks:
+    - name: create user
+      ansible.builtin.user:
+        name: "{{USRNM}}"
+        comment: "{{COMM}}"
+      register: usrout
+    - debug:
+        var: usrout.name
+    - debug:
+        var: usrout.comment
+ubuntu@control:~/vprofile/exercice9$ vim vars_precedence.yaml
+ubuntu@control:~/vprofile/exercice9$ ansible-playbook vars_precedence.yaml
+
+PLAY [Understanding vars] **********************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+ok: [web01]
+ok: [web02]
+
+TASK [create user] *****************************************************************
+ok: [web01]
+ok: [db01]
+ok: [web02]
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.name": "playuser"
+}
+ok: [web02] => {
+    "usrout.name": "playuser"
+}
+ok: [db01] => {
+    "usrout.name": "playuser"
+}
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.comment": "variable from playbook"
+}
+ok: [web02] => {
+    "usrout.comment": "variable from playbook"
+}
+ok: [db01] => {
+    "usrout.comment": "variable from playbook"
+}
+
+PLAY RECAP *************************************************************************
+db01                       : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+ubuntu@control:~/vprofile/exercice9$ ls
+ansible.cfg  clientkey.pem  inventory  vars_precedence.yaml
+ubuntu@control:~/vprofile/exercice9$ mkdir group_vars
+ubuntu@control:~/vprofile/exercice9$ vim group_vars/all
+ubuntu@control:~/vprofile/exercice9$ cat group_vars/all
+USRNM: commonuser
+COMM: variable from groupvars_all file
+ubuntu@control:~/vprofile/exercice9$ cat vars_precedence.yaml
+- name: Understanding vars
+  hosts: all
+  vars:
+    USRNM: playuser
+    COMM: variable from playbook
+  tasks:
+    - name: create user
+      ansible.builtin.user:
+        name: "{{USRNM}}"
+        comment: "{{COMM}}"
+      register: usrout
+    - debug:
+        var: usrout.name
+    - debug:
+        var: usrout.comment
+ubuntu@control:~/vprofile/exercice9$ ansible-playbook vars_precedence.yaml
+
+PLAY [Understanding vars] **********************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [web02]
+ok: [web01]
+ok: [db01]
+
+TASK [create user] *****************************************************************
+ok: [web01]
+ok: [db01]
+ok: [web02]
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.name": "playuser"
+}
+ok: [web02] => {
+    "usrout.name": "playuser"
+}
+ok: [db01] => {
+    "usrout.name": "playuser"
+}
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.comment": "variable from playbook"
+}
+ok: [web02] => {
+    "usrout.comment": "variable from playbook"
+}
+ok: [db01] => {
+    "usrout.comment": "variable from playbook"
+}
+
+PLAY RECAP *************************************************************************
+db01                       : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+ubuntu@control:~/vprofile/exercice9$ vim vars_precedence.yaml
+ubuntu@control:~/vprofile/exercice9$ cat vars_precedence.yaml
+- name: Understanding vars
+  hosts: all
+    #vars:
+    #USRNM: playuser
+    #COMM: variable from playbook
+  tasks:
+    - name: create user
+      ansible.builtin.user:
+        name: "{{USRNM}}"
+        comment: "{{COMM}}"
+      register: usrout
+    - debug:
+        var: usrout.name
+    - debug:
+        var: usrout.comment
+ubuntu@control:~/vprofile/exercice9$ ansible-playbook vars_precedence.yaml
+
+PLAY [Understanding vars] **********************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [web02]
+ok: [web01]
+ok: [db01]
+
+TASK [create user] *****************************************************************
+changed: [web02]
+changed: [db01]
+changed: [web01]
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.name": "commonuser"
+}
+ok: [web02] => {
+    "usrout.name": "commonuser"
+}
+ok: [db01] => {
+    "usrout.name": "commonuser"
+}
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.comment": "variable from groupvars_all file"
+}
+ok: [web02] => {
+    "usrout.comment": "variable from groupvars_all file"
+}
+ok: [db01] => {
+    "usrout.comment": "variable from groupvars_all file"
+}
+
+PLAY RECAP *************************************************************************
+db01                       : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+ubuntu@control:~/vprofile/exercice9$ vim group_vars/webservers
+ubuntu@control:~/vprofile/exercice9$ cat group_vars/webservers
+USRNM: webgroup
+COMM: variable from group_vars_webservers file
+ubuntu@control:~/vprofile/exercice9$ cat group_vars/all
+USRNM: commonuser
+COMM: variable from groupvars_all file
+ubuntu@control:~/vprofile/exercice9$ ansible-playbook vars_precedence.yaml
+
+PLAY [Understanding vars] **********************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [web02]
+ok: [web01]
+ok: [db01]
+
+TASK [create user] *****************************************************************
+ok: [db01]
+changed: [web01]
+changed: [web02]
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.name": "webgroup"
+}
+ok: [web02] => {
+    "usrout.name": "webgroup"
+}
+ok: [db01] => {
+    "usrout.name": "commonuser"
+}
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.comment": "variable from group_vars_webservers file"
+}
+ok: [web02] => {
+    "usrout.comment": "variable from group_vars_webservers file"
+}
+ok: [db01] => {
+    "usrout.comment": "variable from groupvars_all file"
+}
+
+PLAY RECAP *************************************************************************
+db01                       : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+ubuntu@control:~/vprofile/exercice9$ ls
+ansible.cfg  clientkey.pem  group_vars  inventory  vars_precedence.yaml
+ubuntu@control:~/vprofile/exercice9$ mkdir host_vars
+ubuntu@control:~/vprofile/exercice9$ vim host_vars/web02
+ubuntu@control:~/vprofile/exercice9$ cat host_vars/web02
+USRNM: web02user
+COMM: variables from host_vars/web02 file
+ubuntu@control:~/vprofile/exercice9$ ansible-playbook vars_precedence.yaml
+
+PLAY [Understanding vars] **********************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [web02]
+ok: [web01]
+ok: [db01]
+
+TASK [create user] *****************************************************************
+ok: [web01]
+ok: [db01]
+changed: [web02]
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.name": "webgroup"
+}
+ok: [web02] => {
+    "usrout.name": "web02user"
+}
+ok: [db01] => {
+    "usrout.name": "commonuser"
+}
+
+TASK [debug] ***********************************************************************
+ok: [web01] => {
+    "usrout.comment": "variable from group_vars_webservers file"
+}
+ok: [web02] => {
+    "usrout.comment": "variables from host_vars/web02 file"
+}
+ok: [db01] => {
+    "usrout.comment": "variable from groupvars_all file"
+}
+
+PLAY RECAP *************************************************************************
+db01                       : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+```
+
+Note: Variables priority order is:
+1. playbook variables
+2. host variables: host_vars/hostname
+3. specific group variables: group_vars/groupname
+4. all groups variables: group_vars/all
