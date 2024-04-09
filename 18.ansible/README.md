@@ -463,5 +463,138 @@ web02 | CHANGED => {
 $ ansible webservers -m ansible.builtin.service -a "name=httpd state=started enabled=yes" -i inventory --become
 # this will do systemctl start httpd and systemctl enable httpd
 $ ansible webservers -m ansible.builtin.copy -a "src=index.html dest=/var/www/html/index.html" -i inventory --become
+# change client-sg security group on aws and add new rule custom tcp from anywhere ipv4 or my ip on port 80
+# copy public ip address from one ec2 instance web01 or web02 and open it in a browser => you will see the web page
+$ ansible webservers -m ansible.builtin.service -a "name=httpd state=stopped" -i inventory --become
+# and remove the last added inbound rule from security group
+```
+### Exercice 5: playbooks
+```
+$ cp exercice4 exercice5
+$ cd exercice5
+$ rm -rf index.html
+$ $ ansible webservers -m yum -a "name=httpd state=absent" -i inventory --become
+$ vim web-db.yaml
+---
+- name: Webserver setup
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install httpd
+      ansible.builtin.yum:
+        name: httpd
+        state: present
 
+    - name: start service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: yes
+
+- name: DBserver setup
+  hosts: dbservers
+  become: yes
+  tasks:
+    - name: Install mariadb-server
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+$ ansible-playbook -i inventory web-db.yaml
+
+PLAY [Webserver setup] *************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [web02]
+ok: [web01]
+
+TASK [Install httpd] ***************************************************************
+changed: [web02]
+changed: [web01]
+
+TASK [start service] ***************************************************************
+changed: [web02]
+changed: [web01]
+
+PLAY [DBserver setup] **************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+
+TASK [Install mariadb-server] ******************************************************
+changed: [db01]
+
+PLAY RECAP *************************************************************************
+db01                       : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+$ vim web-db.yaml
+---
+- name: Webserver setup
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install httpd
+      ansible.builtin.yum:
+        name: httpd
+        state: present
+
+    - name: start service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: yes
+
+- name: DBserver setup
+  hosts: dbservers
+  become: yes
+  tasks:
+    - name: Install mariadb-server
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+    - name: start mariadb service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+$ ansible-playbook -i inventory web-db.yaml 
+# -v for debugging
+# -vv for more debugging
+# -vvv for mooore debugging
+
+PLAY [Webserver setup] *************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [web02]
+ok: [web01]
+
+TASK [Install httpd] ***************************************************************
+ok: [web02]
+ok: [web01]
+
+TASK [start service] ***************************************************************
+ok: [web02]
+ok: [web01]
+
+PLAY [DBserver setup] **************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [db01]
+
+TASK [Install mariadb-server] ******************************************************
+ok: [db01]
+
+TASK [start mariadb service] *******************************************************
+changed: [db01]
+
+PLAY RECAP *************************************************************************
+db01                       : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web01                      : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+$ ansible-playbook -i inventory web-db.yaml --syntax-check
+$ ansible-playbook -i inventory web-db.yaml -C
+# it is a dry-run it similated executing the playbook
 ```
