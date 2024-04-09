@@ -598,3 +598,61 @@ $ ansible-playbook -i inventory web-db.yaml --syntax-check
 $ ansible-playbook -i inventory web-db.yaml -C
 # it is a dry-run it similated executing the playbook
 ```
+
+### Exercice 6
+```
+$ cp exercice5 exercice6
+$ cd exercice6
+$ mv web-db.yaml web.yaml
+$ vim web.yaml
+---
+- name: Webserver setup
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install httpd
+      ansible.builtin.yum:
+        name: httpd
+        state: present
+
+    - name: start service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: yes
+    - name: Copy Index file
+      copy:
+        src: files/index.html
+        dest: /var/www/html/index.html
+        backup: yes
+$ mkdir files
+$ cd files
+$ vim index.html
+Learn ansible modules
+$ cd ..
+$ ansible-playbook -i inventory web.yaml -C
+$ ansible-playbook -i inventory web.yaml
+PLAY [Webserver setup] *************************************************************
+
+TASK [Gathering Facts] *************************************************************
+ok: [web02]
+ok: [web01]
+
+TASK [Install httpd] ***************************************************************
+ok: [web02]
+ok: [web01]
+
+TASK [start service] ***************************************************************
+ok: [web02]
+ok: [web01]
+
+TASK [Copy Index file] *************************************************************
+changed: [web02]
+changed: [web01]
+
+PLAY RECAP *************************************************************************
+web01                      : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+web02                      : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+
+```
