@@ -126,3 +126,9 @@ $ pwd
 * You can check installed tools by clicking on the same buttons Manage jenkis , tools
 and check each installation.
 * For git tool, it is already installed by default in jenkins if it is installed on ubuntu OS.
+### Create Jobs
+We will create a sample job to execute some shell commands.
+![alt text](create_job_1.PNG)
+![alt text](create_job_2.PNG)
+![alt text](create_job_3.PNG)
+![alt text](create_job_4.PNG)
