@@ -142,5 +142,57 @@ We will create a sample job to execute some shell commands.
 ![alt text](./img/create_job_6.PNG)
 * Step 7
 ![alt text](./img/create_job_7.PNG)
-* Step 8
+* Step 8: Check workspace of the job. normally if there is a file generated with the job it will be shown under workspace section of the job.
 ![alt text](./img/create_job_8.PNG)
+* Step 9
+![alt text](./img/create_job_.PNG)
+* Step 10
+![alt text](./img/create_job_.PNG)
+* Step 11
+![alt text](./img/create_job_.PNG)
+* Step 12
+![alt text](./img/create_job_.PNG)
+* Step 13
+![alt text](./img/create_job_.PNG)
+## Create Job for git
+* Create freestyle job with name BuildGitVprofile
+* Step 1
+![alt text](./img/git_job_1.PNG)
+* Step 2
+![alt text](./img/git_job_2.PNG)
+* Step 3
+![alt text](./img/git_job_3.PNG)
+* Step 4
+![alt text](./img/git_job_4.PNG)
+* Step 5
+![alt text](./img/git_job_5.PNG)
+* Step 6
+![alt text](./img/git_job_6.PNG)
+* Step 7
+![alt text](./img/git_job_7.PNG)
+* Step 8
+![alt text](./img/git_job_8.PNG)
+* Step 9
+![alt text](./img/git_job_9.PNG)
+* Step 10
+![alt text](./img/git_job_10.PNG)
+* Step 11
+![alt text](./img/git_job_11.PNG)
+* Step 12
+![alt text](./img/git_job_12.PNG)
+
+### Copy Job from other one and use a default took already installed on jenkins server
+* Step 1
+![alt text](./img/git_job_copy1.PNG)
+* Step 2 
+![alt text](./img/git_job_copy2.PNG)
+* Step 3
+![alt text](./img/git_job_copy3.PNG)
+* Step 4
+![alt text](./img/git_job_copy4.PNG)
+* Step 5
+![alt text](./img/git_job_copy5.PNG)
+* Step 6
+![alt text](./img/git_job_copy6.PNG)
+* Step 7
+![alt text](./img/git_job_copy7.PNG)
