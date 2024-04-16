@@ -94,7 +94,7 @@ From graphic UI we click on create a job and configure and run the job to see th
 #### Examples
 * Freestyle Job example
 - we need tools and plugins, we can install them through Manage jenkins.
-![alt text](install_tools)
+![alt text](install_tools.PNG)
 - that to install tools we need plugins. By default we have just a small list of tools that we can install like JDK, Maven, Git, Gradle but if we want more we need to install plugins 
 ##### Install JDK tool
 * Click Add JDK
@@ -102,4 +102,4 @@ From graphic UI we click on create a job and configure and run the job to see th
 ```
 $ ls /usr/lib/jvm/java-1.11.0-openjdk-amd64
 ```
-![alt text](install_jdk)
+![alt text](install_jdk.PNG)
