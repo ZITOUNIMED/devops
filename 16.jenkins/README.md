@@ -1,7 +1,7 @@
 # Jenkins
 ## CI: Continuous Integration
 jenkins CI automatizes the process of build, evaluate report and notify, etc after each push of developers on source code remote repo.
-![alt text](jenkins-CI.PNG)
+![alt text](./img/jenkins-CI.PNG)
 ### Features
 * Open Source
 * Extensible:
@@ -94,7 +94,7 @@ From graphic UI we click on create a job and configure and run the job to see th
 #### Examples
 * Freestyle Job example
 - we need tools and plugins, we can install them through Manage jenkins.
-![alt text](install_tools.PNG)
+![alt text](./img/install_tools.PNG)
 - that to install tools we need plugins. By default we have just a small list of tools that we can install like JDK, Maven, Git, Gradle but if we want more we need to install plugins 
 * Install JDK 11 tool
 - Click Add JDK
@@ -107,7 +107,7 @@ $ cd java-1.11.0-openjdk-amd64$
 $ pwd
 /usr/lib/jvm/java-1.11.0-openjdk-amd64
 ```
-![alt text](install_jdk.PNG)
+![alt text](./img/install_jdk.PNG)
 * Install JDK8 tool
 - Install Open JDK 8 on ec2 instance
 ```
@@ -118,17 +118,29 @@ $ cd java-1.8.0-openjdk-amd64
 $ pwd
 /usr/lib/jvm/java-1.8.0-openjdk-amd64
 ```
-![alt text](install_jdk_8.PNG)
+![alt text](./img/install_jdk_8.PNG)
 * Install Maven tool
 - Click Add Maven button
-![alt text](install_maven_tool.PNG)
+![alt text](./img/install_maven_tool.PNG)
 * Save
 * You can check installed tools by clicking on the same buttons Manage jenkis , tools
 and check each installation.
 * For git tool, it is already installed by default in jenkins if it is installed on ubuntu OS.
 ### Create Jobs
 We will create a sample job to execute some shell commands.
-![alt text](create_job_1.PNG)
-![alt text](create_job_2.PNG)
-![alt text](create_job_3.PNG)
-![alt text](create_job_4.PNG)
+* Step 1
+![alt text](./img/create_job_1.PNG)
+* Step 2
+![alt text](./img/create_job_2.PNG)
+* Step 3
+![alt text](./img/create_job_3.PNG)
+* Step 4
+![alt text](./img/create_job_4.PNG)
+* Step 5
+![alt text](./img/create_job_5.PNG)
+* Step 6
+![alt text](./img/create_job_6.PNG)
+* Step 7
+![alt text](./img/create_job_7.PNG)
+* Step 8
+![alt text](./img/create_job_8.PNG)
