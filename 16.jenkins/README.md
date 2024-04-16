@@ -96,10 +96,33 @@ From graphic UI we click on create a job and configure and run the job to see th
 - we need tools and plugins, we can install them through Manage jenkins.
 ![alt text](install_tools.PNG)
 - that to install tools we need plugins. By default we have just a small list of tools that we can install like JDK, Maven, Git, Gradle but if we want more we need to install plugins 
-##### Install JDK tool
-* Click Add JDK
-* SSH into EC2 instance where jenkins is installed and get jdk 11 path 
+* Install JDK 11 tool
+- Click Add JDK
+- SSH into EC2 instance where jenkins is installed and get jdk 11 path 
+JDK are installed under /usr/lib/jvm/
 ```
+$ ls /usr/lib/jvm/
 $ ls /usr/lib/jvm/java-1.11.0-openjdk-amd64
+$ cd java-1.11.0-openjdk-amd64$
+$ pwd
+/usr/lib/jvm/java-1.11.0-openjdk-amd64
 ```
 ![alt text](install_jdk.PNG)
+* Install JDK8 tool
+- Install Open JDK 8 on ec2 instance
+```
+$ sudo apt update
+$ sudo apt install openjdk-8-jdk -y
+$ ls /usr/lib/jvm/
+$ cd java-1.8.0-openjdk-amd64
+$ pwd
+/usr/lib/jvm/java-1.8.0-openjdk-amd64
+```
+![alt text](install_jdk_8.PNG)
+* Install Maven tool
+- Click Add Maven button
+![alt text](install_maven_tool.PNG)
+* Save
+* You can check installed tools by clicking on the same buttons Manage jenkis , tools
+and check each installation.
+* For git tool, it is already installed by default in jenkins if it is installed on ubuntu OS.
