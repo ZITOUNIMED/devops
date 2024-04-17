@@ -234,3 +234,41 @@ Use the BUILD_TIMESTAMP variable.
 Don't forget to uncheck the checkbox "This project is parameterized" to not have anymore to set the variable VERSION manally.
 Build Now the job and check the result.
 ![alt text](./img/versions_12.PNG)
+
+## Pipeline
+
+### Nexus
+* Step 1: Create EC2 instance with 
+Name: NexusServer
+AMI: centos 7
+Instance Type: t2.meduim 2 vcpu 4 Gi
+Keypair: nexus-key.pem
+Security group: nexus-sg:
+Inboud rule 1: SSH 22 from my IP
+Inbound rule 2: Custom TCP from My IP port 8081
+Inbound rule 3: Custom TCP from jenkins-sg port 8081
+User Data: nexus-setup.sh
+![alt text](./img/nexus_0.PNG)
+* Step 2: Sign up
+Copy public ip of the Ec2 instance and open it in a browser use port 8081.
+![alt text](./img/nexus_1.PNG)
+![alt text](./img/nexus_2.PNG)
+![alt text](./img/nexus_3.PNG)
+
+### SonarQube
+* Step 1: Create EC2 instance
+Name: SonarServer
+AMI: Ubuntu 20.04
+Instance Type: t2.meduim 2vcpu 4 Gi
+keybair: sonar-key.pem
+Security Group: sonar-sg
+Inboud rule 1: SSH 22 from my IP
+Inbound rule 2: Custom TCP from My IP port 80
+Inbound rule 3: Custom TCP from jenkins-sg port 80
+User data: sonar-setup.sh
+* Step 2: Access sonarqube from a browser
+Copy public ip of Ec2 instance and open it in a browser without specifying any port
+![alt text](./img/sonar_1.PNG)
+* Step 3: Login
+Click on the button at the top right 'Sign In' and use default user/password: admin/admin
+![alt text](./img/sonar_2.PNG)
