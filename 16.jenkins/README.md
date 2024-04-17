@@ -272,3 +272,101 @@ Copy public ip of Ec2 instance and open it in a browser without specifying any p
 * Step 3: Login
 Click on the button at the top right 'Sign In' and use default user/password: admin/admin
 ![alt text](./img/sonar_2.PNG)
+
+### Install Plugins
+* Nexus Artifact Uploader
+* SonarQube Scanner
+* Build Timestamp
+* Pipeline maven integration
+* Pipeline Utility Steps
+
+![alt text](./img/plugins_1.PNG)
+And
+![alt text](./img/plugins_2.PNG)
+
+### Pipeline As A Code
+#### Introduction
+* Automate pipeline setup with Jenkins
+* jenkinsfile defines Stages in CI/CD Pipeline
+* Jenkinsfile is a text file with Pipeline DSL Syntax
+* Similar to groovy
+* Two Syntax
+- Scipted
+- Declarative
+
+#### Concepts:
+* Pipeline
+* Node/agent
+* Stage
+* Step
+
+#### Syntax
+```
+pipeline {
+  agent: {
+
+  }
+  tools {
+
+  }
+  environment {
+
+  }
+  stages {
+
+  }
+}
+```
+* Agent
+```
+pipeline {
+  agent {
+    label: "matser"
+  }
+}
+```
+* Tools
+```
+pipeline {
+  tools {
+    maven "Maven3"
+  }
+}
+```
+* Environment
+```
+pipeline {
+  environment {
+    NEXUS_VERSION = "nexus3"
+    NEXUS_PROTOCOL = "http
+    NEXUS_URL = "your-ip-addr-here:8081"
+    NEXUS_REPOSITORY = "maven-nexus-repo"
+    NEXUS_CREDENTIAL_ID = "nexus-user-credentials"
+    ARTIVERSION = "${env.BUILD_ID}"
+  }
+}
+```
+* Stages
+```
+pipeline {
+  stages {
+    stage("Clone code from VCS") {
+      
+    }
+    stage("Maven Build") {
+      steps {
+        sh 'mvn clean install'
+      }
+      post {
+        success {
+          echo 'Now Archiving...'
+          archiveArtifacts artifacts: '**/target/*.war'
+        }
+      }
+    }
+    stage("Publish to Nexus Repository Manager") {
+      
+    }
+  }
+}
+```
