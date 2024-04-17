@@ -163,10 +163,9 @@ We will create a sample job to execute some shell commands.
 ![alt text](./img/git_job_2.PNG)
 * Step 3: define the build step of maven
 ![alt text](./img/git_job_3.PNG)
-* Step 4: choose the jdk oracle 11 and save. after that run a new build it will take lots of time because of the instance type t2.micro. we need to change the instance type.
-- stop the instance
-- if it takes lots of time to stop then force stop the instance
+* Step 4: choose the jdk oracle 11 and save and after that run a new build.
 ![alt text](./img/git_job_4.PNG)
+ The build takes lots of time because of the instance type t2.micro. we need to change the instance type. Then stop the instance and if it takes lots of time to stop then force stop the instance.
 * Step 5: change instance type.
 ![alt text](./img/git_job_5.PNG)
 * Step 6: choose instance type t2.small
@@ -199,3 +198,39 @@ We will create a sample job to execute some shell commands.
 ![alt text](./img/git_job_copy6.PNG)
 * Step 7
 ![alt text](./img/git_job_copy7.PNG)
+## Jenkins Environment Variables
+In this lecture we will see three types of jenkins environment variables:
+* Default jenkins variables: like BUILD_ID
+* Parameter variables
+* Plugin variables.
+
+### Job versioning builds
+* Step 1: create new freestyle job named "versioning-builds" copy from "BuildGitVprofile".
+* Step 2: remove copied post build action
+* Step 3: create new build step "Execute shell".
+Jenkins Environment variables: https://wiki.jenkins.io/display/JENKINS/Building+a+software+project
+Save and start build the job two times.
+![alt text](./img/versions_1.PNG)
+This is the result. Two war files copied to versions folder.
+![alt text](./img/versions_2.PNG)
+* Step 4: Make the project parameterized.
+Add a String parameter.
+![alt text](./img/versions_3.PNG)
+User the version parameter in execute shell build step.
+![alt text](./img/versions_4.PNG)
+Now we don't have anymore the button "build now" but we have new button "build with parameters".
+![alt text](./img/versions_5.PNG)
+The result:
+![alt text](./img/versions_6.PNG)
+* Step 5: Add plugin
+![alt text](./img/versions_7.PNG)
+![alt text](./img/versions_8.PNG)
+* Step 6: Install Zentimestamp
+![alt text](./img/versions_9.PNG)
+* Step 7: Change date pattern for BUILD_TIMESTAMP variable for our job and use it.
+![alt text](./img/versions_10.PNG)
+Use the BUILD_TIMESTAMP variable.
+![alt text](./img/versions_11.PNG)
+Don't forget to uncheck the checkbox "This project is parameterized" to not have anymore to set the variable VERSION manally.
+Build Now the job and check the result.
+![alt text](./img/versions_12.PNG)
