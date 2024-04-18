@@ -283,6 +283,8 @@ Click on the button at the top right 'Sign In' and use default user/password: ad
 ![alt text](./img/plugins_1.PNG)
 And
 ![alt text](./img/plugins_2.PNG)
+Click Install
+![alt text](./img/plugins_3.PNG)
 
 ### Pipeline As A Code
 #### Introduction
@@ -370,3 +372,114 @@ pipeline {
   }
 }
 ```
+
+### First Pipeline
+* Create new job type Pipeline named sample-paac using pipeline from script option. Use script /examples/Jenkinsfile1
+
+![alt text](./img/pipeline_1.PNG)
+Save and build
+![alt text](./img/pipeline_2.PNG)
+
+Or using pipeline code from the git repository within source code
+
+![alt text](./img/pipeline_3.PNG)
+And
+![alt text](./img/pipeline_4.PNG)
+
+## Code Analysis
+Code analysis check:
+* Best Practices of coding
+* Vulnerabilities in code
+* Functional Errors before deployment
+
+### Code Analysis Tools
+* Checkstyle
+* Cobertura
+* mstest
+* owasp
+* Sonarqube Scanner
+* Etc.
+
+### Install SonarQube Scanner tool
+![alt text](./img/sonar_tool_0.PNG)
+![alt text](./img/sonar_tool_1.PNG)
+![alt text](./img/sonar_tool_2.PNG)
+![alt text](./img/sonar_tool_3.PNG)
+![alt text](./img/sonar_tool_4.PNG)
+Copy the generated token
+![alt text](./img/sonar_tool_5.PNG)
+![alt text](./img/sonar_tool_6.PNG)
+![alt text](./img/sonar_tool_7.PNG)
+
+### Checkstyle pipeline
+* Step create new pipeline 
+![alt text](./img/checkstyle_pipeline_1.PNG)
+* Copy script from /samples/Jenkinsfile2 and paste it into "Script" section and save.
+
+### Quality Gate
+Setup the server
+* Step 1: Create quality gate rule 
+![alt text](./img/quality_gate_1)
+![alt text](./img/quality_gate_2)
+![alt text](./img/quality_gate_3)
+![alt text](./img/quality_gate_4)
+* Step 2: Link the quality gate to the project on sonar
+![alt text](./img/quality_gate_5)
+![alt text](./img/quality_gate_6)
+![alt text](./img/quality_gate_7)
+* Step 3: Send the information to jenkins, create a webhook
+![alt text](./img/quality_gate_8)
+Copy jenkins ec2 instance private IP and use it in the url of the webhook
+![alt text](./img/quality_gate_9)
+Note: if jenkins-sg does not allow http on port 8080 from anywhere we should add inbound rule to allow from sonarqube sg
+![alt text](./img/quality_gate_10)
+* Step 4: Update jenkins pipeline script and run build.
+Use script in file /examples/Jenkinsfile3
+* Step 5: check the result
+![alt text](./img/quality_gate_11)
+![alt text](./img/quality_gate_12)
+
+## NexusOSS Sonartype Repository
+* It is a Software Repository: Storage location for software packages
+* Our own repo for softwares/packages are: 
+- Maven: Maven dependencies
+- apt: Packages for debian based systems
+- yum: packages for RedHat based systems
+- nuget: package manager for .NET
+- NPM: package manager for javascript
+- Docker: registry to store Docker images
+- Etc.
+
+* Nexus Software Repository Manager:
+- Runs on java
+- Used to store artifacts
+- Used as a package manager for dependencies
+- Opensource & Entreprise versions
+- Supports Variety of repo like maven, apt, docker, Ruby gems etc.
+nexus_integration
+
+* Step 1: SignIn into Nexus server and create new repository
+![alt text](./img/nexus_4)
+Choose maven2 hosted => to store artifacts (maven2 proxy to retrieve artifatcs)
+![alt text](./img/nexus_5)
+![alt text](./img/nexus_6)
+
+* Step 2: Setup Nexus cridentials on jenkins
+![alt text](./img/nexus_7)
+![alt text](./img/nexus_8)
+![alt text](./img/nexus_9)
+![alt text](./img/nexus_10)
+![alt text](./img/nexus_11)
+
+* Step 3: configure timestamp tool
+![alt text](./img/nexus_12)
+![alt text](./img/nexus_13)
+
+* step 4: change everywhere public ip by private ip. 
+- in sonar use jenkins private ip under project settings
+- in jenkins settings use sonar and nexus private ips 
+* Step 5: use Jenkinsfile4 and update the pipeline script and run.
+![alt text](./img/nexus_14)
+
+Check the result
+![alt text](./img/nexus_15)
