@@ -40,22 +40,22 @@ Copy the generated token
 ## Quality Gate
 Setup the server
 * Step 1: Create quality gate rule 
-![alt text](./img/quality_gate_1)
-![alt text](./img/quality_gate_2)
-![alt text](./img/quality_gate_3)
-![alt text](./img/quality_gate_4)
+![alt text](./img/quality_gate_1.PNG)
+![alt text](./img/quality_gate_2.PNG)
+![alt text](./img/quality_gate_3.PNG)
+![alt text](./img/quality_gate_4.PNG)
 * Step 2: Link the quality gate to the project on sonar
-![alt text](./img/quality_gate_5)
-![alt text](./img/quality_gate_6)
-![alt text](./img/quality_gate_7)
+![alt text](./img/quality_gate_5.PNG)
+![alt text](./img/quality_gate_6.PNG)
+![alt text](./img/quality_gate_7.PNG)
 * Step 3: Send the information to jenkins, create a webhook
-![alt text](./img/quality_gate_8)
+![alt text](./img/quality_gate_8.PNG)
 Copy jenkins ec2 instance private IP and use it in the url of the webhook
-![alt text](./img/quality_gate_9)
+![alt text](./img/quality_gate_9.PNG)
 Note: if jenkins-sg does not allow http on port 8080 from anywhere we should add inbound rule to allow from sonarqube sg
-![alt text](./img/quality_gate_10)
+![alt text](./img/quality_gate_10.PNG)
 * Step 4: Update jenkins pipeline script and run build.
 Use script in file /samples/Jenkinsfile
 * Step 5: check the result
-![alt text](./img/quality_gate_11)
-![alt text](./img/quality_gate_12)
+![alt text](./img/quality_gate_11.PNG)
+![alt text](./img/quality_gate_12.PNG)
