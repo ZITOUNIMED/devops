@@ -1,0 +1,15 @@
+[accesslog]
+[api]
+  insecure=true
+  dashboard=true
+  debug=true
+[log]
+  level="DEBUG"
+[entryPoints]
+  [entryPoints.web]
+    address=":80"
+[providers.file]
+  directory="c:/dev/devops-workspace/meddevops/31.traefik/examples/ex7/services/"
+  watch=true
+[providers.docker]
+  endpoint="npipe:////./pipe/docker_engine"

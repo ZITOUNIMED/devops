@@ -1,0 +1,12 @@
+version: "3.3"
+services:
+  my-container:
+    image: nginx:1.16
+    container_name: my-nginx
+    ports:
+      - 192.168.1.40:80:80
+    labels:
+    - traefik.http.routers.my-container.rule=Host(`example.com`, `www.example.com`, `{subdomain:[zit]+}.example.com`) || Path(`/example/`, `/example/{.*}`)
+    - traefik.http.routers.my-container.middlewares=rewrite
+    - traefik.http.middlewares.rewrite.replacepathregex.regex=^/example/{.*}
+    - traefik.http.middlewares.rewrite.replacepathregex.replacement=/tata/$$1

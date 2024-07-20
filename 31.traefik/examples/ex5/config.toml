@@ -1,0 +1,19 @@
+[accesslog]
+[api]
+  insecure=true
+  dashboard=true
+  debug=true
+[log]
+  level="INFO"
+[entryPoints]
+  [entryPoints.web]
+    address=":80"
+    [entryPoints.web.http.redirections]
+      [entryPoints.web.http.redirections.entryPoint]
+        to="web_secure"
+        scheme="https"
+  [entryPoints.web_secure]
+    address=":443"
+[providers.file]
+  directory="c:/dev/devops-workspace/meddevops/31.traefik/examples/ex5/services/"
+  watch=true

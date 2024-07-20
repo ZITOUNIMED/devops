@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  my-container:
+    image: nginx:1.16
+    container_name: my-nginx
+    ports:
+      - 192.168.1.40:80:80
+    labels:
+    - traefik.http.routers.my-container.rule=Host(`example.com`) || Path(`/example/`)

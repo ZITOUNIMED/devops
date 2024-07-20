@@ -1,0 +1,13 @@
+[accesslog]
+[api]
+  insecure=true
+  dashboard=true
+  debug=true
+[log]
+  level="DEBUG"
+[entryPoints]
+  [entryPoints.prometheus]
+    address=":9090"
+[providers.docker]
+  endpoint="ssh://jenkinsvm@192.168.1.40:22"
+  useBindPortIP = true

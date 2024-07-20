@@ -1,0 +1,13 @@
+[accesslog]
+[api]
+  insecure=true
+  dashboard=true
+  debug=true
+[log]
+  level="INFO"
+[entryPoints]
+  [entryPoints.web]
+    address=":80"
+[providers.file]
+  directory="c:/dev/devops-workspace/meddevops/31.traefik/examples/ex3/services/"
+  watch=true

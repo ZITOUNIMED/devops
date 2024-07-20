@@ -1,0 +1,13 @@
+version: "3.3"
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "192.168.1.40:9090:9090"  # Expose Prometheus on port 9090
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml  # Mount configuration file
+    restart: unless-stopped
+    labels:
+    - traefik.http.routers.promethueus.entrypoints=promethueus

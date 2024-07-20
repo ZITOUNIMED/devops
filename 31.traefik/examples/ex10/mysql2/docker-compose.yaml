@@ -1,0 +1,11 @@
+version: '3'
+services:
+  db:
+    image: mysql:5.7
+    ports:
+    - 192.168.1.40:3307:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    labels:
+      - traefik.tcp.routers.mysql2.rule=HostSNI(`*`)
+      - traefik.tcp.routers.mysql2.entrypoints=mysql2

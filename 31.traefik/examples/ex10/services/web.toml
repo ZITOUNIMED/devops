@@ -1,0 +1,10 @@
+[http]
+  [http.routers]
+    [http.routers.web_route]
+      entryPoints=["web"]
+      service= "web"
+      rule= "Path(`/`)"
+  [http.services]
+    [http.services.web]
+      [[http.services.web.loadBalancer.servers]]
+        url="http://localhost:8081"

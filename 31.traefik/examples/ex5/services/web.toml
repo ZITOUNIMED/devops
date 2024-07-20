@@ -1,0 +1,23 @@
+[http]
+  [http.routers]
+    [http.routers.zitouni_route]
+      entryPoints=["web", "web_secure"]
+      service= "web"
+      rule= "Path(`/`)"
+      middlewares=["zitouni_https"]
+      [[tls.certificates]]
+        certFile="c:/dev/devops-workspace/meddevops/31.traefik/examples/ex5/certs/zitouni.crt"
+        keyFile="c:/dev/devops-workspace/meddevops/31.traefik/examples/ex5/certs/zitouni.key"
+      #[http.routers.zitouni_route.tls]
+       # certFile="certs/zitouni.crt"
+        #keyFile="cert/zitouni.key"
+  [http.middlewares]
+    [http.middlewares.zitouni_https.redirectScheme]
+      scheme="https"
+      permanent=true
+  [http.services]
+    [http.services.web]
+      [[http.services.web.loadBalancer.servers]]
+        url="http://localhost:8081"
+      [[http.services.web.loadBalancer.servers]]
+        url="http://localhost:8082"

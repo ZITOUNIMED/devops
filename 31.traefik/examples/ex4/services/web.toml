@@ -1,0 +1,19 @@
+[http]
+  [http.routers]
+    [http.routers.web_route]
+      entryPoints=["web"]
+      service= "web"
+      rule= "Path(`/`)"
+      middlewares=["test-auth"]
+  [http.middlewares]
+    [http.middlewares.test-auth.basicAuth]
+      users = [
+        "medzit1:$2y$05$Mchlo3c4u4Mz3c6InhxPn.IR99mAieKhKO3T6ObsbFnZoKufZBwKy",
+        "medzit2:$2y$05$Mchlo3c4u4Mz3c6InhxPn.IR99mAieKhKO3T6ObsbFnZoKufZBwKy"
+     ]
+  [http.services]
+    [http.services.web]
+      [[http.services.web.loadBalancer.servers]]
+        url="http://localhost:8081"
+      [[http.services.web.loadBalancer.servers]]
+        url="http://localhost:8082"
