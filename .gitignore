@@ -1,1 +1,7 @@
-zcommit.sh
+/25.terraform/terraform-scripts/*/.terraform
+/25.terraform/terraform-scripts/*/.terraform.lock.hcl
+/25.terraform/terraform-scripts/*/terraform.tfstate
+/25.terraform/terraform-scripts/*/terraform.tfstate.backup
+
+/25.terraform/terraform-scripts/*/zitouni-key
+/25.terraform/terraform-scripts/*/zitouni-key.pub
